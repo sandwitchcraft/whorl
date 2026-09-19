@@ -4,10 +4,25 @@ const el = id => document.getElementById(id);
 const views = { upload: el('view-upload'), loading: el('view-loading'), result: el('view-result') };
 
 let pendingFiles = [];
+let selectedExamples = [];
 let profiles = [];
+let layout = 'overlay';
+let heroSpin = null;
+let loadingSpin = null;
 
 function showView(name) {
   for (const [key, node] of Object.entries(views)) node.hidden = key !== name;
+
+  if (name === 'upload' && !heroSpin) {
+    heroSpin = Decor.spin(el('hero-art'), { size: 420, rings: 12, thickness: 5.6, speed: 0.12 });
+  }
+  if (name === 'loading') {
+    loadingSpin = Decor.spin(el('loading-art'), { size: 150, rings: 7, thickness: 4.4, speed: 0.55 });
+  } else if (loadingSpin) {
+    loadingSpin.stop();
+    loadingSpin = null;
+  }
+  if (name !== 'result') Spiral.stop();
 }
 
 function showError(node, message) {
@@ -16,6 +31,10 @@ function showError(node, message) {
 }
 
 /* ---- Upload screen ---- */
+
+function selectionCount() {
+  return pendingFiles.length + selectedExamples.length;
+}
 
 function renderFileList() {
   const list = el('file-list');
@@ -27,10 +46,14 @@ function renderFileList() {
 
     const dot = document.createElement('span');
     dot.className = 'dot';
-    dot.style.background = Spiral.colorFor(i);
+    dot.style.background = Spiral.colorFor(i + selectedExamples.length);
 
     const name = document.createElement('span');
     name.textContent = file.name;
+
+    const meta = document.createElement('span');
+    meta.className = 'meta';
+    meta.textContent = `${Math.max(1, Math.round(file.size / 1024))} KB`;
 
     const remove = document.createElement('button');
     remove.type = 'button';
@@ -41,7 +64,41 @@ function renderFileList() {
       renderFileList();
     });
 
-    li.append(dot, name, remove);
+    li.append(dot, name, meta, remove);
+    list.appendChild(li);
+  });
+}
+
+async function loadExamples() {
+  let items;
+  try {
+    const response = await fetch('/examples');
+    items = (await response.json()).examples;
+  } catch {
+    return; // examples are a convenience; upload still works without them
+  }
+
+  const list = el('example-list');
+  list.innerHTML = '';
+  items.forEach(item => {
+    const li = document.createElement('li');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'example-btn';
+    button.dataset.id = item.id;
+    button.setAttribute('aria-pressed', 'false');
+    button.innerHTML =
+      `<span class="ex-author">${escapeHtml(item.author)}</span>` +
+      `<span class="ex-title">${escapeHtml(item.title)}</span>`;
+    button.addEventListener('click', () => {
+      const at = selectedExamples.indexOf(item.id);
+      if (at >= 0) selectedExamples.splice(at, 1);
+      else selectedExamples.push(item.id);
+      button.classList.toggle('is-selected', at < 0);
+      button.setAttribute('aria-pressed', String(at < 0));
+      renderFileList();
+    });
+    li.appendChild(button);
     list.appendChild(li);
   });
 }
@@ -88,13 +145,14 @@ el('upload-form').addEventListener('submit', async e => {
   showError(el('upload-error'), '');
 
   const text = el('paste-input').value.trim();
-  if (!pendingFiles.length && !text) {
-    showError(el('upload-error'), 'Add a PDF or paste some text first.');
+  if (!selectionCount() && !text) {
+    showError(el('upload-error'), 'Add a PDF, pick an example, or paste some text first.');
     return;
   }
 
   const body = new FormData();
   pendingFiles.forEach(f => body.append('files', f));
+  selectedExamples.forEach(id => body.append('example_ids', id));
   if (text) {
     body.append('text', text);
     body.append('label', 'Pasted text');
@@ -112,7 +170,6 @@ el('upload-form').addEventListener('submit', async e => {
 });
 
 async function analyze(body) {
-  el('loading-label').textContent = 'Reading the document\u2026';
   showView('loading');
 
   const response = await fetch('/analyze', { method: 'POST', body });
@@ -282,19 +339,34 @@ function wordBars() {
   });
 }
 
+/* Fill the space available rather than sitting at a fixed size. */
+function chartSize(cells) {
+  const col = el('chart').parentElement;
+  const available = col.clientWidth || window.innerWidth - 480;
+  const perCell = (available - (cells - 1) * 28) / cells;
+  const vertical = window.innerHeight - 210;
+  return Math.round(Math.max(260, Math.min(perCell, vertical, cells > 1 ? 620 : 860)));
+}
+
 function renderResult() {
   if (!profiles.length) { showView('upload'); return; }
 
   renderChips();
   statCards();
   wordBars();
-  Spiral.render(el('chart'), profiles, { size: 460 });
+
+  const toggle = el('layout-toggle');
+  toggle.hidden = profiles.length < 2;
+  const cells = layout === 'split' && profiles.length > 1 ? profiles.length : 1;
+  Spiral.render(el('chart'), profiles, { size: chartSize(cells), layout });
 
   const single = profiles.length === 1;
-  el('chart-title').textContent = single ? profiles[0].label : 'Overlaid fingerprints';
+  el('chart-title').textContent = single
+    ? profiles[0].label
+    : (layout === 'split' ? 'Side by side' : 'Overlaid fingerprints');
   el('chart-sub').textContent = single
     ? `${profiles[0].stats.word_count.toLocaleString()} words · rendered from ${profiles[0].words.length} function words`
-    : `${profiles.length} documents · ${profiles[0].words.length} function words each`;
+    : `${profiles.length} documents · ${profiles[0].words.length} function words each · same scale`;
 
   el('export-btn').textContent = single ? 'Export as PNG' : 'Export comparison as PNG';
   el('add-btn').textContent = single ? 'Compare with another author' : 'Add another';
@@ -325,9 +397,35 @@ el('add-input').addEventListener('change', async e => {
 
 /* ---- Navigation and export ---- */
 
+el('layout-toggle').addEventListener('click', e => {
+  const button = e.target.closest('button[data-layout]');
+  if (!button || button.dataset.layout === layout) return;
+  layout = button.dataset.layout;
+  for (const b of el('layout-toggle').querySelectorAll('button')) {
+    b.classList.toggle('is-active', b.dataset.layout === layout);
+  }
+  renderResult();
+});
+
+let resizeJob = null;
+window.addEventListener('resize', () => {
+  if (views.result.hidden || !profiles.length) return;
+  clearTimeout(resizeJob);
+  resizeJob = setTimeout(renderResult, 180);
+});
+
 function goHome() {
   profiles = [];
   pendingFiles = [];
+  selectedExamples = [];
+  layout = 'overlay';
+  for (const b of el('layout-toggle').querySelectorAll('button')) {
+    b.classList.toggle('is-active', b.dataset.layout === 'overlay');
+  }
+  for (const b of el('example-list').querySelectorAll('.example-btn')) {
+    b.classList.remove('is-selected');
+    b.setAttribute('aria-pressed', 'false');
+  }
   renderFileList();
   el('paste-input').value = '';
   showError(el('upload-error'), '');
@@ -338,26 +436,35 @@ function goHome() {
 el('back-btn').addEventListener('click', goHome);
 el('home-link').addEventListener('click', e => { e.preventDefault(); goHome(); });
 
-el('export-btn').addEventListener('click', () => {
-  const svg = el('chart').querySelector('svg');
-  if (!svg) return;
+el('export-btn').addEventListener('click', async () => {
+  const svgs = [...el('chart').querySelectorAll('svg')];
+  if (!svgs.length) return;
 
   const scale = 2;
-  const width = +svg.getAttribute('width');
-  const height = +svg.getAttribute('height');
-  const source = new XMLSerializer().serializeToString(svg);
-  const url = URL.createObjectURL(new Blob([source], { type: 'image/svg+xml;charset=utf-8' }));
+  const gap = svgs.length > 1 ? 24 : 0;
+  const cellW = +svgs[0].getAttribute('width');
+  const cellH = +svgs[0].getAttribute('height');
+  const width = cellW * svgs.length + gap * (svgs.length - 1);
+  const height = cellH;
 
-  const img = new Image();
-  img.onload = () => {
+  let images;
+  try {
+    images = await Promise.all(svgs.map(loadSvgImage));
+  } catch {
+    showError(el('result-error'), 'Could not export the image.');
+    return;
+  }
+
+  {
     const canvas = document.createElement('canvas');
     canvas.width = width * scale;
     canvas.height = height * scale;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#12141c';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    URL.revokeObjectURL(url);
+    images.forEach((img, i) => {
+      ctx.drawImage(img, (cellW + gap) * i * scale, 0, cellW * scale, cellH * scale);
+    });
 
     canvas.toBlob(blob => {
       if (!blob) { showError(el('result-error'), 'Could not export the image.'); return; }
@@ -374,14 +481,23 @@ el('export-btn').addEventListener('click', () => {
       // Revoking synchronously can cancel the download before it starts.
       setTimeout(() => URL.revokeObjectURL(href), 10000);
     }, 'image/png');
-  };
-  img.onerror = () => {
-    URL.revokeObjectURL(url);
-    showError(el('result-error'), 'Could not export the image.');
-  };
-  img.src = url;
+  }
 });
+
+function loadSvgImage(svg) {
+  const source = new XMLSerializer().serializeToString(svg);
+  const url = URL.createObjectURL(new Blob([source], { type: 'image/svg+xml;charset=utf-8' }));
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('svg load failed')); };
+    img.src = url;
+  });
+}
 
 function slug(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'fingerprint';
 }
+
+loadExamples();
+showView('upload');

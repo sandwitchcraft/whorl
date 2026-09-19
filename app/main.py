@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -12,6 +13,7 @@ MAX_PROFILES = 4
 MIN_WORDS = 100
 
 STATIC_DIR = Path(__file__).parent / "static"
+EXAMPLES = json.loads((Path(__file__).parent / "data" / "examples.json").read_text())
 
 app = FastAPI(title="Whorl", description="Stylometric fingerprints from text.")
 
@@ -50,18 +52,35 @@ def _label_from_filename(filename: str | None) -> str:
     return stem[:-4] if stem.lower().endswith(".pdf") else stem
 
 
+@app.get("/examples")
+def examples() -> dict:
+    return {
+        "examples": [
+            {"id": key, "title": v["title"], "author": v["author"],
+             "words": len(v["text"].split())}
+            for key, v in EXAMPLES.items()
+        ]
+    }
+
+
 @app.post("/analyze")
 async def analyze(
     files: list[UploadFile] = File(default=[]),
     text: str | None = Form(default=None),
     label: str | None = Form(default=None),
+    example_ids: list[str] = Form(default=[]),
 ) -> dict:
-    """Accepts PDF uploads and/or pasted text. Always returns a list of
-    profiles: one renders alone, several overlay as compare mode."""
+    """Accepts PDF uploads, pasted text, and/or bundled example ids. Always
+    returns a list of profiles: one renders alone, several overlay."""
     sources: list[tuple[str, str]] = []
 
     if text and text.strip():
         sources.append((label or "Pasted text", text))
+    for example_id in example_ids:
+        example = EXAMPLES.get(example_id)
+        if example is None:
+            raise HTTPException(404, f"No example named {example_id!r}.")
+        sources.append((example["author"], example["text"]))
     for upload in files:
         sources.append((_label_from_filename(upload.filename), await _read_upload(upload)))
 

@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/static/style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" defer></script>
 <script src="/static/spiral.js" defer></script>
+<script src="/static/decor.js" defer></script>
 <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -24,8 +25,8 @@
   <div class="upload-grid">
     <div class="upload-copy">
       <h1>Every writer leaves a print.</h1>
-      <p>Upload a document and see the pattern behind it — how often you reach
-         for "the" over "which," how your sentences breathe. No two
+      <p>Upload a document and see the pattern behind it. How often do you reach
+         for "the" over "which," or "like" over "as". No two
          fingerprints look alike.</p>
 
       <form id="upload-form">
@@ -52,34 +53,22 @@
 
         <p id="upload-error" class="error" role="alert" hidden></p>
       </form>
+
+      <section class="examples">
+        <h2 class="section-label">Or try an example</h2>
+        <p class="examples-hint">Pick one to see its print — or two to compare.</p>
+        <ul id="example-list" class="example-list"></ul>
+      </section>
     </div>
 
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 440 440" width="420" height="420">
-        <path d="M220,180 A40,40 0 0,1 240,255" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
-        <path d="M267,248 A55,55 0 1,1 185,178" fill="none" stroke="#c9a66b" stroke-width="3.6" stroke-linecap="round" opacity="0.6"/>
-        <path d="M150,220 A70,70 0 0,1 220,150" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-        <path d="M262,147 A85,85 0 1,1 140,191" fill="none" stroke="#c9a66b" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/>
-        <path d="M220,320 A100,100 0 0,1 126,186" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.5"/>
-        <path d="M163,120 A115,115 0 1,1 278,320" fill="none" stroke="#c9a66b" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
-        <path d="M350,220 A130,130 0 0,1 120,304" fill="none" stroke="#c9a66b" stroke-width="2.2" stroke-linecap="round" opacity="0.45"/>
-        <path d="M84,270 A145,145 0 1,1 346,293" fill="none" stroke="#c9a66b" stroke-width="3.8" stroke-linecap="round" opacity="0.6"/>
-        <path d="M333,333 A160,160 0 0,1 97,323" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-        <path d="M56,160 A175,175 0 0,1 392,250" fill="none" stroke="#c9a66b" stroke-width="2.8" stroke-linecap="round" opacity="0.5"/>
-        <path d="M342,74 A190,190 0 1,1 56,315" fill="none" stroke="#c9a66b" stroke-width="3.2" stroke-linecap="round" opacity="0.45"/>
-        <path d="M290,413 A205,205 0 0,1 27,150" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.4"/>
-      </svg>
-    </div>
+    <div class="hero-art" id="hero-art" aria-hidden="true"></div>
   </div>
 </main>
 
 <!-- Loading -->
 <main id="view-loading" class="view" hidden>
   <div class="loading">
-    <svg class="spinner" viewBox="0 0 50 50" width="46" height="46" aria-hidden="true">
-      <circle cx="25" cy="25" r="20" fill="none" stroke="#c9a66b" stroke-width="3" stroke-linecap="round" stroke-dasharray="80 45"/>
-    </svg>
-    <p id="loading-label">Reading the document…</p>
+    <div id="loading-art" role="status" aria-label="Analyzing"></div>
   </div>
 </main>
 
@@ -91,6 +80,10 @@
       New upload
     </button>
     <ul id="chips" class="chips"></ul>
+    <div id="layout-toggle" class="layout-toggle" hidden>
+      <button type="button" data-layout="overlay" class="is-active">Together</button>
+      <button type="button" data-layout="split">Separate</button>
+    </div>
   </div>
 
   <div class="result-grid">
