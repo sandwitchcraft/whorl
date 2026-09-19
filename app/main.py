@@ -26,9 +26,17 @@ async def _read_upload(upload: UploadFile) -> str:
         raise HTTPException(400, f"{upload.filename!r} is not a valid PDF.")
 
     try:
-        return extract_pdf_text(data)
+        text = extract_pdf_text(data)
     except Exception:
         raise HTTPException(422, f"Could not read text from {upload.filename!r}.")
+
+    if not text.strip():
+        raise HTTPException(
+            422,
+            f"{upload.filename!r} has no selectable text -- it looks like a "
+            f"scanned or image-only PDF. Try a text-based PDF, or paste the text.",
+        )
+    return text
 
 
 def _label_from_filename(filename: str | None) -> str:
