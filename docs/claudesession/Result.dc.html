@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stylistic Fingerprints — result</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+  body { margin: 0; font-family: 'Inter', sans-serif; background: #12141c; color: #ece7da; }
+  a { color: #c9a66b; text-decoration: none; }
+  a:hover { color: #ddb98a; }
+  .fp-btn { transition: opacity .15s ease; }
+  .fp-btn:hover { opacity: .88; }
+  .fp-word-row { display: flex; align-items: center; gap: 10px; }
+  .fp-bar-track { flex-grow: 1; height: 5px; background: rgba(236,231,218,0.08); border-radius: 3px; overflow: hidden; }
+  .fp-bar-fill { height: 100%; background: #c9a66b; border-radius: 3px; }
+</style>
+</helmet>
+
+<div style="width: 1280px; height: 800px; box-sizing: border-box; background: #12141c; display: flex; flex-direction: column;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 28px 56px 0;">
+    <a href="Main.dc.html" style="font-size: 13px; color: #8b8578; display: flex; align-items: center; gap: 6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      New upload
+    </a>
+    <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: #c9a66b;">Stylistic Fingerprints</div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; gap: 8px; padding: 24px 56px 0;">
+
+    <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+      <svg width="460" height="460" viewBox="0 0 440 440">
+        <path d="M220,180 A40,40 0 0,1 240,255" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.9"/>
+        <path d="M267,248 A55,55 0 1,1 185,178" fill="none" stroke="#c9a66b" stroke-width="4.2" stroke-linecap="round" opacity="0.9"/>
+        <path d="M150,220 A70,70 0 0,1 220,150" fill="none" stroke="#c9a66b" stroke-width="2.2" stroke-linecap="round" opacity="0.85"/>
+        <path d="M262,147 A85,85 0 1,1 140,191" fill="none" stroke="#c9a66b" stroke-width="5" stroke-linecap="round" opacity="0.92"/>
+        <path d="M220,320 A100,100 0 0,1 126,186" fill="none" stroke="#c9a66b" stroke-width="2.8" stroke-linecap="round" opacity="0.85"/>
+        <path d="M163,120 A115,115 0 1,1 278,320" fill="none" stroke="#c9a66b" stroke-width="3.4" stroke-linecap="round" opacity="0.88"/>
+        <path d="M350,220 A130,130 0 0,1 120,304" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.8"/>
+        <path d="M84,270 A145,145 0 1,1 346,293" fill="none" stroke="#c9a66b" stroke-width="4.6" stroke-linecap="round" opacity="0.9"/>
+        <path d="M333,333 A160,160 0 0,1 97,323" fill="none" stroke="#c9a66b" stroke-width="2.2" stroke-linecap="round" opacity="0.75"/>
+        <path d="M56,160 A175,175 0 0,1 392,250" fill="none" stroke="#c9a66b" stroke-width="3.2" stroke-linecap="round" opacity="0.82"/>
+        <path d="M342,74 A190,190 0 1,1 56,315" fill="none" stroke="#c9a66b" stroke-width="3.6" stroke-linecap="round" opacity="0.78"/>
+        <path d="M290,413 A205,205 0 0,1 27,150" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.72"/>
+        <circle cx="220" cy="220" r="14" fill="#c9a66b" opacity="0.85"/>
+      </svg>
+      <div style="text-align: center; margin-top: 8px;">
+        <div style="font-family: 'Fraunces', serif; font-size: 20px; margin-bottom: 4px;">sample-manuscript.pdf</div>
+        <div style="font-size: 12.5px; color: #8b8578;">42,318 words · rendered from 50 function words</div>
+      </div>
+    </div>
+
+    <div style="width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 22px; padding: 4px 0 24px;">
+
+      <div style="background: #1c202e; border: 1px solid rgba(236,231,218,0.1); border-radius: 4px; padding: 20px;">
+        <div style="font-size: 11.5px; color: #8b8578; margin-bottom: 6px; letter-spacing: 0.01em;">Center reading</div>
+        <div style="font-family: 'Fraunces', serif; font-size: 28px; color: #c9a66b; margin-bottom: 4px;">0.61</div>
+        <div style="font-size: 13px; color: #b8b2a2; line-height: 1.5;">Vocabulary richness — the ratio of unique words to total words across the document.</div>
+      </div>
+
+      <div style="background: #1c202e; border: 1px solid rgba(236,231,218,0.1); border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 13px;">
+        <div style="font-size: 11.5px; color: #8b8578; letter-spacing: 0.01em;">Most distinctive words</div>
+        <div class="fp-word-row"><div style="width: 34px; font-size: 13px; color: #ece7da;">the</div><div class="fp-bar-track"><div class="fp-bar-fill" style="width: 92%;"></div></div></div>
+        <div class="fp-word-row"><div style="width: 34px; font-size: 13px; color: #ece7da;">to</div><div class="fp-bar-track"><div class="fp-bar-fill" style="width: 83%;"></div></div></div>
+        <div class="fp-word-row"><div style="width: 34px; font-size: 13px; color: #ece7da;">and</div><div class="fp-bar-track"><div class="fp-bar-fill" style="width: 74%;"></div></div></div>
+        <div class="fp-word-row"><div style="width: 34px; font-size: 13px; color: #ece7da;">as</div><div class="fp-bar-track"><div class="fp-bar-fill" style="width: 66%;"></div></div></div>
+        <div class="fp-word-row"><div style="width: 34px; font-size: 13px; color: #ece7da;">with</div><div class="fp-bar-track"><div class="fp-bar-fill" style="width: 58%;"></div></div></div>
+      </div>
+
+      <div style="flex-grow: 1;"></div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button type="button" class="fp-btn" style="background: #c9a66b; color: #12141c; border: none; border-radius: 3px; padding: 13px; font-size: 14.5px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">Export as PNG</button>
+        <a href="Compare.dc.html" style="text-align: center; border: 1px solid #4a4638; border-radius: 3px; padding: 12px; font-size: 14px; color: #ece7da;">Compare with another author</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

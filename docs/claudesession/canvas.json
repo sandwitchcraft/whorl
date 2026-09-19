@@ -1,0 +1,15 @@
+{
+  "v": 3,
+  "createdOnFiles": {"v": 1, "at": "2026-09-19T00:00:00Z"},
+  "title": "Stylistic Fingerprints — site mockups",
+  "launch": {"view": "canvas"},
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {"x": 0, "y": 0, "w": 1280, "h": 800, "title": "1. Upload", "is_interactive": true},
+    "Result.dc.html": {"x": 1360, "y": 0, "w": 1280, "h": 800, "title": "2. Result — single fingerprint", "is_interactive": true},
+    "Compare.dc.html": {"x": 2720, "y": 0, "w": 1280, "h": 800, "title": "3. Compare mode", "is_interactive": true}
+  },
+  "order": ["Main.dc.html", "Result.dc.html", "Compare.dc.html"],
+  "notes": {},
+  "designSystems": []
+}

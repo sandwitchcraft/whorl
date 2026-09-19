@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stylistic Fingerprints — upload</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+  body { margin: 0; font-family: 'Inter', sans-serif; background: #12141c; color: #ece7da; }
+  a { color: #c9a66b; text-decoration: none; }
+  a:hover { color: #ddb98a; }
+  .fp-btn { transition: opacity .15s ease; }
+  .fp-btn:hover { opacity: .88; }
+  .fp-drop:hover { border-color: #c9a66b; }
+</style>
+</helmet>
+
+<div style="width: 1280px; height: 800px; box-sizing: border-box; background: #12141c; display: flex; flex-direction: column;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 32px 56px 0;">
+    <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 19px; color: #c9a66b;">Stylistic Fingerprints</div>
+    <div style="font-size: 13px; color: #8b8578;">A stylometry-to-art tool</div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; align-items: center; gap: 72px; padding: 0 56px;">
+
+    <div style="width: 520px; display: flex; flex-direction: column; gap: 28px;">
+      <div>
+        <h1 style="font-family: 'Fraunces', serif; font-weight: 500; font-size: 46px; line-height: 1.08; margin: 0 0 18px; letter-spacing: -0.01em;">Every writer leaves a print.</h1>
+        <p style="font-size: 16px; line-height: 1.65; color: #b8b2a2; margin: 0;">Upload a document and see the pattern behind it — how often you reach for "the" over "which," how your sentences breathe. No two fingerprints look alike.</p>
+      </div>
+
+      <label for="fp-file" class="fp-drop" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; height: 180px; border: 1.5px dashed #4a4638; border-radius: 4px; cursor: pointer; text-align: center; padding: 0 24px; box-sizing: border-box;">
+        <input id="fp-file" type="file" accept="application/pdf" style="position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b8b2a2" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        <div style="font-size: 14.5px; color: #ece7da;">Drop a PDF, or click to browse</div>
+        <div style="font-size: 12.5px; color: #8b8578;">Up to 40 pages · text-based PDFs work best</div>
+      </label>
+
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="Result.dc.html" class="fp-btn" style="background: #c9a66b; color: #12141c; border: none; border-radius: 3px; padding: 13px 26px; font-size: 14.5px; font-weight: 600; display: inline-block;">Analyze fingerprint</a>
+        <a href="#" style="font-size: 13.5px; color: #8b8578; border-bottom: 1px solid #4a4638;">or paste text instead</a>
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+      <svg width="420" height="420" viewBox="0 0 440 440" style="opacity: .9;">
+        <path d="M220,180 A40,40 0 0,1 240,255" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+        <path d="M267,248 A55,55 0 1,1 185,178" fill="none" stroke="#c9a66b" stroke-width="3.6" stroke-linecap="round" opacity="0.6"/>
+        <path d="M150,220 A70,70 0 0,1 220,150" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <path d="M262,147 A85,85 0 1,1 140,191" fill="none" stroke="#c9a66b" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/>
+        <path d="M220,320 A100,100 0 0,1 126,186" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.5"/>
+        <path d="M163,120 A115,115 0 1,1 278,320" fill="none" stroke="#c9a66b" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+        <path d="M350,220 A130,130 0 0,1 120,304" fill="none" stroke="#c9a66b" stroke-width="2.2" stroke-linecap="round" opacity="0.45"/>
+        <path d="M84,270 A145,145 0 1,1 346,293" fill="none" stroke="#c9a66b" stroke-width="3.8" stroke-linecap="round" opacity="0.6"/>
+        <path d="M333,333 A160,160 0 0,1 97,323" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <path d="M56,160 A175,175 0 0,1 392,250" fill="none" stroke="#c9a66b" stroke-width="2.8" stroke-linecap="round" opacity="0.5"/>
+        <path d="M342,74 A190,190 0 1,1 56,315" fill="none" stroke="#c9a66b" stroke-width="3.2" stroke-linecap="round" opacity="0.45"/>
+        <path d="M290,413 A205,205 0 0,1 27,150" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.4"/>
+      </svg>
+    </div>
+
+  </div>
+
+  <div style="padding: 20px 56px 28px; font-size: 12px; color: #6b6656; border-top: 1px solid rgba(236,231,218,0.08);">Function-word frequency, sentence rhythm, and punctuation habits are analyzed locally — nothing is stored after your session.</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

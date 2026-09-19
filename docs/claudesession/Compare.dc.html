@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stylistic Fingerprints — compare</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600&display=swap">
+<style>
+  body { margin: 0; font-family: 'Inter', sans-serif; background: #12141c; color: #ece7da; }
+  a { color: #c9a66b; text-decoration: none; }
+  a:hover { color: #ddb98a; }
+  .fp-btn { transition: opacity .15s ease; }
+  .fp-btn:hover { opacity: .88; }
+  .fp-chip-x { transition: opacity .15s ease; }
+  .fp-chip-x:hover { opacity: .7; }
+</style>
+</helmet>
+
+<div style="width: 1280px; height: 800px; box-sizing: border-box; background: #12141c; display: flex; flex-direction: column;">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 28px 56px 0;">
+    <a href="Result.dc.html" style="font-size: 13px; color: #8b8578; display: flex; align-items: center; gap: 6px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      Back to single fingerprint
+    </a>
+    <div style="font-family: 'Fraunces', serif; font-style: italic; font-size: 17px; color: #c9a66b;">Stylistic Fingerprints</div>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: 10px; padding: 20px 56px 0;">
+    <div style="display: flex; align-items: center; gap: 7px; background: #1c202e; border: 1px solid rgba(201,166,107,0.35); border-radius: 20px; padding: 7px 8px 7px 13px;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #c9a66b; display: inline-block;"></span>
+      <span style="font-size: 13px;">sample-manuscript.pdf</span>
+      <button type="button" class="fp-chip-x" aria-label="Remove sample-manuscript.pdf" style="background: none; border: none; color: #8b8578; cursor: pointer; font-size: 15px; line-height: 1; padding: 2px; font-family: 'Inter', sans-serif;">×</button>
+    </div>
+    <div style="display: flex; align-items: center; gap: 7px; background: #1c202e; border: 1px solid rgba(95,150,145,0.4); border-radius: 20px; padding: 7px 8px 7px 13px;">
+      <span style="width: 8px; height: 8px; border-radius: 50%; background: #5f9691; display: inline-block;"></span>
+      <span style="font-size: 13px;">second-draft.pdf</span>
+      <button type="button" class="fp-chip-x" aria-label="Remove second-draft.pdf" style="background: none; border: none; color: #8b8578; cursor: pointer; font-size: 15px; line-height: 1; padding: 2px; font-family: 'Inter', sans-serif;">×</button>
+    </div>
+    <button type="button" class="fp-btn" style="background: none; border: 1px dashed #4a4638; color: #b8b2a2; border-radius: 20px; padding: 8px 15px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif;">+ Add fingerprint</button>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; gap: 8px; padding: 8px 56px 0;">
+
+    <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+      <svg width="440" height="440" viewBox="0 0 440 440">
+        <path d="M220,180 A40,40 0 0,1 240,255" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.9"/>
+        <path d="M262,147 A85,85 0 1,1 140,191" fill="none" stroke="#c9a66b" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+        <path d="M163,120 A115,115 0 1,1 278,320" fill="none" stroke="#c9a66b" stroke-width="3.4" stroke-linecap="round" opacity="0.85"/>
+        <path d="M84,270 A145,145 0 1,1 346,293" fill="none" stroke="#c9a66b" stroke-width="4.6" stroke-linecap="round" opacity="0.88"/>
+        <path d="M56,160 A175,175 0 0,1 392,250" fill="none" stroke="#c9a66b" stroke-width="3.2" stroke-linecap="round" opacity="0.8"/>
+        <path d="M290,413 A205,205 0 0,1 27,150" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.7"/>
+
+        <path d="M198,224 A32,32 0 1,1 233,190" fill="none" stroke="#5f9691" stroke-width="2.2" stroke-linecap="round" opacity="0.9"/>
+        <path d="M283,258 A62,62 0 0,1 165,244" fill="none" stroke="#5f9691" stroke-width="4" stroke-linecap="round" opacity="0.88"/>
+        <path d="M128,168 A98,98 0 1,1 300,235" fill="none" stroke="#5f9691" stroke-width="3" stroke-linecap="round" opacity="0.82"/>
+        <path d="M330,300 A128,128 0 0,1 108,336" fill="none" stroke="#5f9691" stroke-width="3.8" stroke-linecap="round" opacity="0.85"/>
+        <path d="M75,315 A158,158 0 1,1 372,180" fill="none" stroke="#5f9691" stroke-width="2.8" stroke-linecap="round" opacity="0.75"/>
+        <path d="M400,270 A188,188 0 0,1 60,90" fill="none" stroke="#5f9691" stroke-width="2.4" stroke-linecap="round" opacity="0.68"/>
+
+        <circle cx="220" cy="220" r="12" fill="#c9a66b" opacity="0.6"/>
+        <circle cx="220" cy="220" r="7" fill="#5f9691" opacity="0.9"/>
+      </svg>
+    </div>
+
+    <div style="width: 340px; flex-shrink: 0; display: flex; flex-direction: column; gap: 18px; padding: 4px 0 24px;">
+
+      <div style="background: #1c202e; border: 1px solid rgba(236,231,218,0.1); border-radius: 4px; padding: 18px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #c9a66b; display: inline-block;"></span>
+          <span style="font-size: 13px; color: #ece7da;">sample-manuscript.pdf</span>
+        </div>
+        <div style="font-size: 12.5px; color: #8b8578; line-height: 1.5;">Richness 0.61 · 42,318 words</div>
+      </div>
+
+      <div style="background: #1c202e; border: 1px solid rgba(236,231,218,0.1); border-radius: 4px; padding: 18px;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #5f9691; display: inline-block;"></span>
+          <span style="font-size: 13px; color: #ece7da;">second-draft.pdf</span>
+        </div>
+        <div style="font-size: 12.5px; color: #8b8578; line-height: 1.5;">Richness 0.48 · 29,004 words</div>
+      </div>
+
+      <div style="background: #1c202e; border: 1px solid rgba(236,231,218,0.1); border-radius: 4px; padding: 18px;">
+        <div style="font-size: 11.5px; color: #8b8578; margin-bottom: 8px; letter-spacing: 0.01em;">Largest divergence</div>
+        <div style="font-family: 'Fraunces', serif; font-size: 18px; color: #ece7da; margin-bottom: 4px;">"which"</div>
+        <div style="font-size: 12.5px; color: #b8b2a2; line-height: 1.5;">Used 3.4× more often in second-draft.pdf than in sample-manuscript.pdf.</div>
+      </div>
+
+      <div style="flex-grow: 1;"></div>
+
+      <button type="button" class="fp-btn" style="background: #c9a66b; color: #12141c; border: none; border-radius: 3px; padding: 13px; font-size: 14.5px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">Export comparison as PNG</button>
+
+    </div>
+
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

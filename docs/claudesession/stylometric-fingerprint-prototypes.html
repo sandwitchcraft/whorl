@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Stylistic Fingerprints — bar, rings, and spiral arc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,340;0,9..144,500;1,9..144,420&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+  :root {
+    --ink: #12141c;
+    --card: #1c202e;
+    --paper: #ece7da;
+    --paper-dim: #b8b2a2;
+    --gold: #c9a66b;
+    --teal: #5f9691;
+    --hair: rgba(236, 231, 218, 0.1);
+    --hair-strong: rgba(236, 231, 218, 0.22);
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 64px 28px 80px;
+  }
+  header { margin-bottom: 52px; max-width: 680px; }
+  .kicker {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--gold);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: clamp(32px, 4.6vw, 48px);
+    line-height: 1.05;
+    margin: 0 0 20px;
+    letter-spacing: -0.01em;
+  }
+  header p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--paper-dim);
+    margin: 0;
+  }
+  .legend { display: flex; gap: 22px; margin-top: 26px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--paper-dim); }
+  .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1020px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    padding: 26px 26px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .card-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; margin: 0; }
+  .card-tag { font-size: 11px; color: var(--paper-dim); white-space: nowrap; letter-spacing: 0.01em; }
+  .card-note { font-size: 13px; line-height: 1.55; color: var(--paper-dim); margin: 6px 0 18px; max-width: 44ch; }
+  .chart-holder { display: flex; justify-content: center; align-items: center; flex: 1; }
+  svg { overflow: visible; }
+  .axis-label { font-family: 'Inter', sans-serif; font-size: 10px; fill: var(--paper-dim); }
+  .grid-ring { fill: none; stroke: var(--hair); stroke-width: 1; }
+  .grid-spoke { stroke: var(--hair); stroke-width: 1; }
+  footer {
+    margin-top: 52px;
+    padding-top: 26px;
+    border-top: 1px solid var(--hair-strong);
+    font-size: 13px;
+    color: var(--paper-dim);
+    max-width: 680px;
+    line-height: 1.6;
+  }
+  footer strong { color: var(--paper); font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="kicker">Sketch pass — bar, rings, and a new spiral idea</p>
+    <h1>Bars that curve: a spiral arc chart</h1>
+    <p>Dropped the polar area and radar versions. Kept the circular bar plot and concentric rings, and added a third form: each function word sits at its own distance from center like the rings do, but instead of a fixed-radius circle, its "bar" is an arc that stretches around the circumference — arc length encodes frequency instead of bar height. Two synthetic authors are overlaid on each.</p>
+    <div class="legend">
+      <div class="legend-item"><span class="swatch" style="background: #c9a66b"></span>Author A</div>
+      <div class="legend-item"><span class="swatch" style="background: #5f9691"></span>Author B</div>
+    </div>
+  </header>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    <strong>Note on this sketch:</strong> data is synthetic, tuned only to give each form a distinct-looking silhouette for comparison. Word list, arc-length scaling, and start-angle logic for the spiral chart still need deciding — this is about which structure reads best as a fingerprint, not final values.
+  </footer>
+
+</div>
+
+<script>
+const words = ["the","and","of","to","that","which","but","or","as","in","with","for"];
+
+const authorA = [0.92,0.74,0.61,0.83,0.40,0.28,0.55,0.20,0.66,0.47,0.35,0.58];
+const authorB = [0.55,0.88,0.35,0.44,0.80,0.62,0.25,0.70,0.30,0.90,0.48,0.33];
+
+const GOLD = "#c9a66b";
+const TEAL = "#5f9691";
+const SIZE = 380;
+const R = SIZE / 2 - 46;
+
+const configs = [
+  { id: "bar",    title: "Circular bar plot",     tag: "baseline",     note: "Each word is a spoke, bar length = frequency. Clean and legible, reads clearly as a chart rather than an artifact." },
+  { id: "spiral", title: "Spiral arc chart",       tag: "new idea",     note: "Arcs swing continuously between aligned at 12 o'clock and spread to their own rotation — arc length is the only thing that stays fixed as data." },
+  { id: "rings",  title: "Concentric ring layers", tag: "experimental", note: "Each word becomes a full ring rather than a spoke or arc; frequency sets stroke weight. Most literally 'fingerprint,' least legible as data." },
+];
+
+const grid = d3.select("#grid");
+
+configs.forEach(cfg => {
+  const card = grid.append("div").attr("class", "card");
+  const head = card.append("div").attr("class", "card-head");
+  head.append("h3").attr("class", "card-title").text(cfg.title);
+  head.append("span").attr("class", "card-tag").text(cfg.tag);
+  card.append("p").attr("class", "card-note").text(cfg.note);
+
+  const holder = card.append("div").attr("class", "chart-holder");
+  const svg = holder.append("svg")
+    .attr("width", SIZE)
+    .attr("height", SIZE)
+    .attr("viewBox", `0 0 ${SIZE} ${SIZE}`);
+
+  const g = svg.append("g").attr("transform", `translate(${SIZE/2},${SIZE/2})`);
+
+  if (cfg.id === "bar") { drawGridBase(g, true); drawBar(g); }
+  if (cfg.id === "spiral") { drawGridBase(g, false); drawSpiral(g); }
+  if (cfg.id === "rings") { drawGridBase(g, false); drawRings(g); }
+});
+
+function drawGridBase(g, withSpokesAndLabels) {
+  if (!withSpokesAndLabels) return;
+  const n = words.length;
+  words.forEach((w, i) => {
+    const angle = angleFor(i, n);
+    const lx = Math.cos(angle) * (R + 16);
+    const ly = Math.sin(angle) * (R + 16);
+    g.append("text")
+      .attr("class", "axis-label")
+      .attr("x", lx).attr("y", ly)
+      .attr("text-anchor", Math.abs(lx) < 4 ? "middle" : (lx > 0 ? "start" : "end"))
+      .attr("dominant-baseline", "middle")
+      .text(w);
+  });
+}
+
+function angleFor(i, n) { return (i / n) * 2 * Math.PI - Math.PI / 2; }
+
+function drawBar(g) {
+  const n = words.length;
+  const barW = (2 * Math.PI / n) * 0.32;
+  words.forEach((w, i) => {
+    const angle = angleFor(i, n);
+    [ [authorA[i], GOLD, -barW*0.55], [authorB[i], TEAL, barW*0.55] ].forEach(([val, color, offset]) => {
+      const a0 = angle + offset - barW*0.4;
+      const a1 = angle + offset + barW*0.4;
+      const arc = d3.arc().innerRadius(2).outerRadius(2 + val * R).startAngle(a0 + Math.PI/2).endAngle(a1 + Math.PI/2);
+      g.append("path").attr("d", arc).attr("fill", color).attr("opacity", 0.85);
+    });
+  });
+}
+
+function drawRings(g) {
+  const n = words.length;
+  const innerStart = 26;
+  const step = (R - innerStart) / n;
+  words.forEach((w, i) => {
+    const radiusA = innerStart + i * step;
+    const radiusB = innerStart + i * step + step * 0.42;
+    g.append("circle")
+      .attr("r", radiusA).attr("fill", "none")
+      .attr("stroke", GOLD).attr("stroke-opacity", 0.85)
+      .attr("stroke-width", 1 + authorA[i] * 5);
+    g.append("circle")
+      .attr("r", radiusB).attr("fill", "none")
+      .attr("stroke", TEAL).attr("stroke-opacity", 0.85)
+      .attr("stroke-width", 1 + authorB[i] * 5);
+  });
+}
+
+// Each word gets its own radius (like the rings) and a partial arc whose
+// angular length encodes frequency. Instead of a fixed rotation, each arc's
+// start angle animates between "together" (every arc aligned at 12 o'clock)
+// and "out" (its own golden-angle offset) — a continuous swing rather than
+// a static spread. Arc length is what carries the data throughout.
+function drawSpiral(g) {
+  const n = words.length;
+  const innerStart = 26;
+  const step = (R - innerStart) / n;
+  const maxSweep = Math.PI * 1.72; // longest possible arc, in radians
+  const goldenAngle = 2.399963; // ~137.5°, keeps the spread from repeating a pattern
+
+  const items = [];
+  const strokeW = Math.max(2.4, step * 0.5);
+
+  words.forEach((w, i) => {
+    const radiusA = innerStart + i * step;
+    const radiusB = innerStart + i * step + step * 0.42;
+    const targetAngle = (i * goldenAngle) % (2 * Math.PI);
+
+    const pathA = g.append("path")
+      .attr("fill", "none").attr("stroke", GOLD)
+      .attr("stroke-width", strokeW).attr("stroke-opacity", 0.88).attr("stroke-linecap", "round");
+    const pathB = g.append("path")
+      .attr("fill", "none").attr("stroke", TEAL)
+      .attr("stroke-width", strokeW).attr("stroke-opacity", 0.88).attr("stroke-linecap", "round");
+
+    items.push({ radius: radiusA, target: targetAngle, sweep: authorA[i] * maxSweep, path: pathA });
+    items.push({ radius: radiusB, target: targetAngle, sweep: authorB[i] * maxSweep, path: pathB });
+  });
+
+  function renderAt(phase) {
+    items.forEach(it => {
+      const startAngle = it.target * phase; // 0 = every arc together at top, 1 = fully spread to its own angle
+      const arcGen = d3.arc()
+        .innerRadius(it.radius).outerRadius(it.radius)
+        .startAngle(startAngle + Math.PI / 2)
+        .endAngle(startAngle + Math.PI / 2 + it.sweep)
+        .cornerRadius(2);
+      it.path.attr("d", arcGen);
+    });
+  }
+
+  const cycleMs = 7000; // full together → out → together loop
+  d3.timer(elapsed => {
+    const t = (elapsed % cycleMs) / cycleMs;
+    const phase = (1 - Math.cos(t * 2 * Math.PI)) / 2; // smooth 0→1→0, eased at both ends
+    renderAt(phase);
+  });
+}
+</script>
+</body>
+</html>
