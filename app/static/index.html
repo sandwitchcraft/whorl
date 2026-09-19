@@ -11,6 +11,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" defer></script>
 <script src="/static/spiral.js" defer></script>
 <script src="/static/decor.js" defer></script>
+<script src="/static/sidebar.js" defer></script>
+<script src="/static/export.js" defer></script>
 <script src="/static/app.js" defer></script>
 </head>
 <body>
@@ -31,12 +33,13 @@
 
       <form id="upload-form">
         <label for="file-input" class="dropzone" id="dropzone">
-          <input id="file-input" type="file" accept="application/pdf" multiple class="visually-hidden">
+          <input id="file-input" type="file" multiple class="visually-hidden"
+                 accept=".pdf,.epub,.docx,.odt,.html,.htm,.xhtml,.txt,.text,.md,.markdown,.json,application/pdf,application/json,text/plain">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
           </svg>
-          <span class="drop-main">Drop a PDF, or click to browse</span>
-          <span class="drop-sub">Text-based PDFs work best · add more than one to compare</span>
+          <span class="drop-main">Drop a document, or click to browse</span>
+          <span class="drop-sub">PDF · EPUB · DOCX · ODT · HTML · TXT · Markdown · or a saved fingerprint (.json)<br>Add more than one to compare</span>
         </label>
 
         <ul id="file-list" class="file-list" hidden></ul>
@@ -96,21 +99,72 @@
     </div>
 
     <aside class="sidebar">
-      <div id="stat-cards"></div>
-      <div id="words-card" class="card">
-        <div class="card-label" id="words-card-label">Most frequent function words</div>
-        <div id="word-bars" class="word-bars"></div>
+      <div class="sidebar-control">
+        <span class="control-label" id="motion-label">Motion</span>
+        <div id="motion-toggle" class="segmented" role="group" aria-labelledby="motion-label">
+          <button type="button" data-motion="spin" class="is-active" aria-pressed="true">Spinning</button>
+          <button type="button" data-motion="aligned" aria-pressed="false">Aligned</button>
+        </div>
       </div>
+
+      <div id="sidebar-tabs" class="tabs" role="tablist" aria-label="Sidebar sections">
+        <button type="button" role="tab" data-tab="summary" class="is-active" aria-selected="true">Summary</button>
+        <button type="button" role="tab" data-tab="metrics" aria-selected="false">Metrics</button>
+        <button type="button" role="tab" data-tab="words" aria-selected="false">Words</button>
+      </div>
+      <div id="sidebar-body" class="sidebar-body" role="tabpanel"></div>
+
       <div class="sidebar-spacer"></div>
       <div class="sidebar-actions">
-        <button type="button" id="export-btn" class="btn-primary">Export as PNG</button>
+        <button type="button" id="export-btn" class="btn-primary">Export image…</button>
+        <button type="button" id="fingerprint-btn" class="btn-secondary">Download fingerprint (.json)</button>
         <button type="button" id="add-btn" class="btn-secondary">Compare with another author</button>
-        <input id="add-input" type="file" accept="application/pdf" multiple class="visually-hidden">
+        <input id="add-input" type="file" multiple class="visually-hidden"
+               accept=".pdf,.epub,.docx,.odt,.html,.htm,.xhtml,.txt,.text,.md,.markdown,.json,application/pdf,application/json,text/plain">
       </div>
       <p id="result-error" class="error" role="alert" hidden></p>
     </aside>
   </div>
 </main>
+
+<!-- Export options -->
+<dialog id="export-dialog" class="dialog" aria-labelledby="export-title">
+  <h2 id="export-title" class="dialog-title">Export image</h2>
+
+  <div class="dialog-grid">
+    <label for="export-format">Format</label>
+    <select id="export-format">
+      <option value="png">PNG</option>
+      <option value="svg">SVG (vector)</option>
+      <option value="jpeg">JPEG</option>
+      <option value="webp">WebP</option>
+    </select>
+
+    <label for="export-scale">Resolution</label>
+    <select id="export-scale">
+      <option value="1">1×</option>
+      <option value="2" selected>2×</option>
+      <option value="3">3×</option>
+      <option value="4">4×</option>
+    </select>
+
+    <label for="export-bg">Background</label>
+    <select id="export-bg">
+      <option value="dark">Dark</option>
+      <option value="transparent">Transparent</option>
+    </select>
+
+    <span class="dialog-spacer"></span>
+    <label class="check"><input type="checkbox" id="export-labels" checked> Include names</label>
+  </div>
+
+  <p id="export-note" class="dialog-note"></p>
+
+  <div class="dialog-actions">
+    <button type="button" id="export-cancel" class="btn-secondary">Cancel</button>
+    <button type="button" id="export-go" class="btn-primary">Download</button>
+  </div>
+</dialog>
 
 </body>
 </html>
