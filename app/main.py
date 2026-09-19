@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .extract import extract_pdf_text
 from .stylometry import build_profile, tokenize
@@ -6,6 +10,8 @@ from .stylometry import build_profile, tokenize
 MAX_UPLOAD_BYTES = 20 * 1024 * 1024
 MAX_PROFILES = 4
 MIN_WORDS = 100
+
+STATIC_DIR = Path(__file__).parent / "static"
 
 app = FastAPI(title="Whorl", description="Stylometric fingerprints from text.")
 
@@ -74,3 +80,12 @@ async def analyze(
     return {
         "profiles": [build_profile(t, source_label) for source_label, t in sources]
     }
+
+
+@app.get("/")
+def index() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+# Mounted last so it cannot shadow the API routes above.
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

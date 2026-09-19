@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whorl — a stylometry-to-art tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" defer></script>
+<script src="/static/spiral.js" defer></script>
+<script src="/static/app.js" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <a href="#" id="home-link" class="wordmark">Whorl</a>
+  <span class="tagline">A stylometry-to-art tool</span>
+</header>
+
+<!-- Upload -->
+<main id="view-upload" class="view">
+  <div class="upload-grid">
+    <div class="upload-copy">
+      <h1>Every writer leaves a print.</h1>
+      <p>Upload a document and see the pattern behind it — how often you reach
+         for "the" over "which," how your sentences breathe. No two
+         fingerprints look alike.</p>
+
+      <form id="upload-form">
+        <label for="file-input" class="dropzone" id="dropzone">
+          <input id="file-input" type="file" accept="application/pdf" multiple class="visually-hidden">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+          </svg>
+          <span class="drop-main">Drop a PDF, or click to browse</span>
+          <span class="drop-sub">Text-based PDFs work best · add more than one to compare</span>
+        </label>
+
+        <ul id="file-list" class="file-list" hidden></ul>
+
+        <div class="paste-wrap" id="paste-wrap" hidden>
+          <label for="paste-input" class="field-label">Paste text</label>
+          <textarea id="paste-input" rows="7" placeholder="Paste at least a few paragraphs…"></textarea>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="analyze-btn" class="btn-primary">Analyze fingerprint</button>
+          <button type="button" id="toggle-paste" class="btn-link">or paste text instead</button>
+        </div>
+
+        <p id="upload-error" class="error" role="alert" hidden></p>
+      </form>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 440 440" width="420" height="420">
+        <path d="M220,180 A40,40 0 0,1 240,255" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+        <path d="M267,248 A55,55 0 1,1 185,178" fill="none" stroke="#c9a66b" stroke-width="3.6" stroke-linecap="round" opacity="0.6"/>
+        <path d="M150,220 A70,70 0 0,1 220,150" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        <path d="M262,147 A85,85 0 1,1 140,191" fill="none" stroke="#c9a66b" stroke-width="4.2" stroke-linecap="round" opacity="0.65"/>
+        <path d="M220,320 A100,100 0 0,1 126,186" fill="none" stroke="#c9a66b" stroke-width="2.6" stroke-linecap="round" opacity="0.5"/>
+        <path d="M163,120 A115,115 0 1,1 278,320" fill="none" stroke="#c9a66b" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+        <path d="M350,220 A130,130 0 0,1 120,304" fill="none" stroke="#c9a66b" stroke-width="2.2" stroke-linecap="round" opacity="0.45"/>
+        <path d="M84,270 A145,145 0 1,1 346,293" fill="none" stroke="#c9a66b" stroke-width="3.8" stroke-linecap="round" opacity="0.6"/>
+        <path d="M333,333 A160,160 0 0,1 97,323" fill="none" stroke="#c9a66b" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+        <path d="M56,160 A175,175 0 0,1 392,250" fill="none" stroke="#c9a66b" stroke-width="2.8" stroke-linecap="round" opacity="0.5"/>
+        <path d="M342,74 A190,190 0 1,1 56,315" fill="none" stroke="#c9a66b" stroke-width="3.2" stroke-linecap="round" opacity="0.45"/>
+        <path d="M290,413 A205,205 0 0,1 27,150" fill="none" stroke="#c9a66b" stroke-width="2.4" stroke-linecap="round" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+</main>
+
+<!-- Loading -->
+<main id="view-loading" class="view" hidden>
+  <div class="loading">
+    <svg class="spinner" viewBox="0 0 50 50" width="46" height="46" aria-hidden="true">
+      <circle cx="25" cy="25" r="20" fill="none" stroke="#c9a66b" stroke-width="3" stroke-linecap="round" stroke-dasharray="80 45"/>
+    </svg>
+    <p id="loading-label">Reading the document…</p>
+  </div>
+</main>
+
+<!-- Result / Compare -->
+<main id="view-result" class="view" hidden>
+  <div class="result-head">
+    <button type="button" id="back-btn" class="btn-back">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      New upload
+    </button>
+    <ul id="chips" class="chips"></ul>
+  </div>
+
+  <div class="result-grid">
+    <div class="chart-col">
+      <div id="chart" class="chart"></div>
+      <div class="chart-caption">
+        <div id="chart-title" class="chart-title"></div>
+        <div id="chart-sub" class="chart-sub"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div id="stat-cards"></div>
+      <div id="words-card" class="card">
+        <div class="card-label" id="words-card-label">Most frequent function words</div>
+        <div id="word-bars" class="word-bars"></div>
+      </div>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-actions">
+        <button type="button" id="export-btn" class="btn-primary">Export as PNG</button>
+        <button type="button" id="add-btn" class="btn-secondary">Compare with another author</button>
+        <input id="add-input" type="file" accept="application/pdf" multiple class="visually-hidden">
+      </div>
+      <p id="result-error" class="error" role="alert" hidden></p>
+    </aside>
+  </div>
+</main>
+
+</body>
+</html>
