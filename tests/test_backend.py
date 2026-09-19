@@ -119,6 +119,20 @@ class MetricTests(unittest.TestCase):
         self.assertGreater(stats["punctuation_per_1000"]["exclamation"], 0)
 
 
+class BaselineTests(unittest.TestCase):
+    def test_baseline_carries_its_samples(self):
+        from app.main import BASELINE, EXAMPLES
+
+        self.assertEqual(len(BASELINE["samples"]), len(EXAMPLES))
+        self.assertEqual(len(BASELINE["rates"]), len(FUNCTION_WORDS))
+        for sample in BASELINE["samples"]:
+            self.assertEqual(len(sample["rates"]), len(FUNCTION_WORDS))
+            self.assertIn("vocab_richness", sample["stats"])
+        # the average really is the mean of the samples
+        first = sum(s["rates"][0] for s in BASELINE["samples"]) / len(BASELINE["samples"])
+        self.assertAlmostEqual(BASELINE["rates"][0], first, places=3)
+
+
 class FingerprintTests(unittest.TestCase):
     def setUp(self):
         self.profile = build_profile(TEXT, "sample-manuscript")

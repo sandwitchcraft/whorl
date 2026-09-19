@@ -405,11 +405,6 @@ textarea:focus { outline: none; border-color: var(--gold); }
   gap: 18px;
   padding: 4px 0 24px;
 }
-.sidebar-control {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
 .control-label { font-size: 12.5px; color: var(--paper-faint); }
 .sidebar-spacer { flex-grow: 1; }
 .sidebar-actions { display: flex; flex-direction: column; gap: 10px; }
@@ -732,3 +727,42 @@ textarea:focus { outline: none; border-color: var(--gold); }
 .dialog-note { font-size: 12px; line-height: 1.5; color: var(--paper-faint); margin: 16px 0 0; min-height: 36px; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; }
 .dialog-actions .btn-secondary, .dialog-actions .btn-primary { padding: 10px 20px; }
+
+/* ---- Display controls & similarity ---- */
+
+.sidebar-controls { display: flex; flex-direction: column; gap: 9px; }
+.control-row { display: flex; align-items: center; justify-content: space-between; }
+.control-row.is-disabled { opacity: 0.4; }
+.segmented button:disabled { cursor: default; }
+
+.similarity .card { padding: 16px 18px; }
+.sim-pair { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 13px; margin-bottom: 4px; }
+.sim-vs { color: var(--paper-faint); font-size: 12px; margin: 0 2px; }
+.sim-score {
+  font-family: 'Fraunces', serif;
+  font-size: 40px;
+  line-height: 1.1;
+  color: var(--gold);
+  margin: 4px 0 12px;
+}
+.sim-parts { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+.sim-part { display: flex; align-items: center; gap: 10px; }
+.sim-part-name { width: 92px; flex-shrink: 0; font-size: 12px; color: var(--paper-dim); }
+.pair-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.pair-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--paper-dim);
+  font-family: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+}
+.pair-row:hover { border-color: var(--hair); }
+.pair-row.is-active { border-color: var(--gold); background: rgba(201, 166, 107, 0.08); color: var(--paper); }

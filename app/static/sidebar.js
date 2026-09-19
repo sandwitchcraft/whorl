@@ -53,7 +53,7 @@ const Sidebar = (() => {
       labels: ['≤5', '6–10', '11–15', '16–20', '21–30', '31–40', '41+'] },
   ];
 
-  const state = { tab: 'summary', wordsMode: 'used', gapMeasure: 'diff' };
+  const state = { tab: 'summary', wordsMode: 'used', gapMeasure: 'diff', pair: null };
   let profiles = [];
   let baseline = null;
 
@@ -92,19 +92,6 @@ const Sidebar = (() => {
   }
 
   /* ---- Computations ---- */
-
-  /* Hellinger similarity of the two function-word distributions (100% = identical). */
-  function similarity(a, b) {
-    const dist = p => {
-      const total = p.words.reduce((sum, w) => sum + w.rate, 0) || 1;
-      return p.words.map(w => w.rate / total);
-    };
-    const pa = dist(a);
-    const pb = dist(b);
-    let sum = 0;
-    pa.forEach((v, i) => { sum += (Math.sqrt(v) - Math.sqrt(pb[i])) ** 2; });
-    return 1 - Math.sqrt(sum / 2);
-  }
 
   /* The things being compared: every profile, or (alone) the profile vs the sample. */
   function subjects() {
@@ -228,6 +215,59 @@ const Sidebar = (() => {
       base && note(h('span', { class: 'legend-dash' }), ` ${base.name}`));
   }
 
+
+  /* ---- Similarity (always visible with two or more texts) ---- */
+
+  const percent = v => `${Math.round(v * 100)}%`;
+
+  function similarityCard() {
+    const ref = Similarity.reference(baseline);
+    const pairs = [];
+    for (let a = 0; a < profiles.length; a++) {
+      for (let b = a + 1; b < profiles.length; b++) {
+        pairs.push({ a, b, key: `${a}-${b}`, result: Similarity.compare(profiles[a], profiles[b], ref) });
+      }
+    }
+    pairs.sort((x, y) => y.result.overall - x.result.overall);
+
+    const chosen = pairs.find(p => p.key === state.pair) || pairs[0];
+    const { overall, delta, parts } = chosen.result;
+    const yard = Similarity.yardstick(ref);
+
+    const names = p => `${profiles[p.a].label} / ${profiles[p.b].label}`;
+    const pairList = pairs.length > 1 && h('div', { class: 'pair-list' }, pairs.map(p =>
+      h('button', {
+        type: 'button',
+        class: `pair-row${p === chosen ? ' is-active' : ''}`,
+        onclick: () => { state.pair = p.key; renderSimilarity(); },
+      }, dot(p.a), dot(p.b), h('span', { class: 'text-name' }, names(p)), h('span', { class: 'text-meta' }, percent(p.result.overall)))));
+
+    const wordsHint = delta == null ? '' :
+      `Burrows’ Delta ${delta.toFixed(2)}: the average gap, in sample standard deviations, across the 50 function words. Lower is more alike.`;
+
+    return card(
+      label('Similarity'),
+      pairList,
+      pairs.length === 1 && h('div', { class: 'sim-pair' },
+        dot(chosen.a), h('span', {}, profiles[chosen.a].label), h('span', { class: 'sim-vs' }, 'vs'),
+        dot(chosen.b), h('span', {}, profiles[chosen.b].label)),
+      h('div', { class: 'sim-score' }, percent(overall)),
+      h('div', { class: 'sim-parts' }, parts.map(part => h('div', { class: 'sim-part', title: part.key === 'words' ? wordsHint : null },
+        h('span', { class: 'sim-part-name' }, part.name),
+        h('div', { class: 'metric-track' },
+          part.score != null && h('div', { class: 'bar-fill', style: { width: percent(part.score), background: 'var(--gold)' } })),
+        h('span', { class: 'metric-val' }, part.score == null ? '—' : percent(part.score))))),
+      note(`100% is identical.${yard
+        ? ` For reference, the bundled authors score ${percent(yard.min)}–${percent(yard.max)} against each other.`
+        : ''}`));
+  }
+
+  function renderSimilarity() {
+    const host = document.getElementById('similarity');
+    host.hidden = profiles.length < 2;
+    host.replaceChildren(...(profiles.length < 2 ? [] : [similarityCard()]));
+  }
+
   /* ---- Summary tab ---- */
 
   function tile(name, value) {
@@ -288,18 +328,6 @@ const Sidebar = (() => {
           dot(i), h('span', { class: 'text-name' }, p.label),
           h('span', { class: 'text-meta' }, `${p.stats.word_count.toLocaleString()} words`)))));
 
-      const pairs = [];
-      for (let a = 0; a < profiles.length; a++) {
-        for (let b = a + 1; b < profiles.length; b++) pairs.push([a, b, similarity(profiles[a], profiles[b])]);
-      }
-      cards.push(card(
-        label('Function-word similarity'),
-        profiles.length === 2
-          ? h('div', { class: 'stat-value' }, pct(pairs[0][2]))
-          : pairs.sort((x, y) => y[2] - x[2]).map(([a, b, v]) => h('div', { class: 'text-row' },
-            dot(a), dot(b), h('span', { class: 'text-name' }, `${profiles[a].label} / ${profiles[b].label}`),
-            h('span', { class: 'text-meta' }, pct(v)))),
-        note('How closely the texts spread their use of the 50 function words (100% = identical). English writers are broadly alike here, so read it as a ranking, not a verdict.')));
     }
 
     const gaps = callouts();
@@ -428,6 +456,7 @@ const Sidebar = (() => {
   function render(nextProfiles, nextBaseline) {
     profiles = nextProfiles;
     baseline = nextBaseline || null;
+    renderSimilarity();
     draw();
   }
 

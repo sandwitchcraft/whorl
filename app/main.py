@@ -42,6 +42,16 @@ def _build_baseline() -> dict:
         "label": f"Sample average ({len(profiles)} bundled texts)",
         "rates": rates,
         "stats": average_stats([p["stats"] for p in profiles]),
+        # The individual texts, so the client can judge how far apart two
+        # authors are *relative to how much these samples differ* (see similarity.js).
+        "samples": [
+            {
+                "label": p["label"],
+                "rates": [w["rate"] for w in p["words"]],
+                "stats": p["stats"],
+            }
+            for p in profiles
+        ],
     }
 
 

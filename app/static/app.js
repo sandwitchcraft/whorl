@@ -319,17 +319,38 @@ el('layout-toggle').addEventListener('click', e => {
   updateCaptions();
 });
 
-/* Motion changes are animated inside the chart, too. */
-el('motion-toggle').addEventListener('click', e => {
-  const button = e.target.closest('button[data-motion]');
-  if (!button) return;
-  Spiral.setMode(button.dataset.motion);
-  for (const b of el('motion-toggle').querySelectorAll('button')) {
-    const active = b === button;
+/* View, motion and order all animate inside the chart -- none re-render it. */
+function markActive(groupId, attr, value) {
+  for (const b of el(groupId).querySelectorAll('button')) {
+    const active = b.dataset[attr] === value;
     b.classList.toggle('is-active', active);
     b.setAttribute('aria-pressed', String(active));
   }
-});
+}
+
+/* Motion only means something in the circle, so it dims while bars are showing. */
+function syncDisplayControls() {
+  const bars = Spiral.getView() === 'bars';
+  markActive('view-toggle', 'view', Spiral.getView());
+  markActive('motion-toggle', 'motion', Spiral.getMode());
+  markActive('order-toggle', 'order', Spiral.isSorted() ? 'sorted' : 'natural');
+  el('motion-row').classList.toggle('is-disabled', bars);
+  for (const b of el('motion-toggle').querySelectorAll('button')) b.disabled = bars;
+}
+
+function bindDisplayControl(groupId, attr, apply) {
+  el(groupId).addEventListener('click', e => {
+    const button = e.target.closest(`button[data-${attr}]`);
+    if (!button || button.disabled) return;
+    apply(button.dataset[attr]);
+    syncDisplayControls();
+  });
+}
+
+bindDisplayControl('view-toggle', 'view', value => Spiral.setView(value));
+bindDisplayControl('motion-toggle', 'motion', value => Spiral.setMode(value));
+bindDisplayControl('order-toggle', 'order', value => Spiral.setSorted(value === 'sorted'));
+syncDisplayControls();
 
 let resizeJob = null;
 window.addEventListener('resize', () => {

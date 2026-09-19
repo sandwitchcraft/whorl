@@ -9,8 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js" defer></script>
+<script src="/static/geometry.js" defer></script>
 <script src="/static/spiral.js" defer></script>
 <script src="/static/decor.js" defer></script>
+<script src="/static/similarity.js" defer></script>
 <script src="/static/sidebar.js" defer></script>
 <script src="/static/export.js" defer></script>
 <script src="/static/app.js" defer></script>
@@ -99,13 +101,31 @@
     </div>
 
     <aside class="sidebar">
-      <div class="sidebar-control">
-        <span class="control-label" id="motion-label">Motion</span>
-        <div id="motion-toggle" class="segmented" role="group" aria-labelledby="motion-label">
-          <button type="button" data-motion="spin" class="is-active" aria-pressed="true">Spinning</button>
-          <button type="button" data-motion="aligned" aria-pressed="false">Aligned</button>
+      <div class="sidebar-controls">
+        <div class="control-row">
+          <span class="control-label" id="view-label">View</span>
+          <div id="view-toggle" class="segmented" role="group" aria-labelledby="view-label">
+            <button type="button" data-view="circle" class="is-active" aria-pressed="true">Circle</button>
+            <button type="button" data-view="bars" aria-pressed="false">Bars</button>
+          </div>
+        </div>
+        <div class="control-row" id="motion-row">
+          <span class="control-label" id="motion-label">Motion</span>
+          <div id="motion-toggle" class="segmented" role="group" aria-labelledby="motion-label">
+            <button type="button" data-motion="spin" class="is-active" aria-pressed="true">Spinning</button>
+            <button type="button" data-motion="pause" aria-pressed="false">Paused</button>
+          </div>
+        </div>
+        <div class="control-row">
+          <span class="control-label" id="order-label">Order</span>
+          <div id="order-toggle" class="segmented" role="group" aria-labelledby="order-label">
+            <button type="button" data-order="natural" class="is-active" aria-pressed="true">Natural</button>
+            <button type="button" data-order="sorted" aria-pressed="false">Sorted</button>
+          </div>
         </div>
       </div>
+
+      <div id="similarity" class="similarity" hidden></div>
 
       <div id="sidebar-tabs" class="tabs" role="tablist" aria-label="Sidebar sections">
         <button type="button" role="tab" data-tab="summary" class="is-active" aria-selected="true">Summary</button>
