@@ -1,10 +1,23 @@
 # Whorl
+*An artist's concept of stylometric fingerprints*
 
-Upload a document and get a visual fingerprint of the author's style, drawn as a
+<img width="1678" height="1048" alt="upload" src="https://github.com/user-attachments/assets/b25c4633-9356-4618-915f-57e2c78a1a43" />
+
+
+Whorl is an *authorial fingerprint visualizer tool*. In plain english, it's able to take an uploaded piece of text, extract the functional word frequencies (how often you use *like* vs *as*, *their*, etc.) that can connect an author to its source.
+
+You can upload a document and get a visual fingerprint of the author's style, drawn as a
 spiral from how often they use 50 common function words. Compare up to four texts.
 
-Accepts PDF, EPUB, DOCX, ODT, HTML, TXT, Markdown, pasted text, or a saved
+It accepts PDF, EPUB, DOCX, ODT, HTML, TXT, Markdown, pasted text, or a saved
 fingerprint (`.json`). Documents are processed in memory and never stored.
+
+<img width="1678" height="1048" alt="result" src="https://github.com/user-attachments/assets/2cd06559-caca-4c07-b943-f17499a48255" />
+
+## Try it on the web!
+
+Visit [whorl.onrender.com](https://whorl.onrender.com) to give it a try! (Don't mind the waiting time for it to start...)
+
 
 ## Run locally
 
@@ -17,13 +30,8 @@ uv run uvicorn app.main:app --reload
 
 Then open http://localhost:8000.
 
-## Tests
+## Deploy on Docker
 
-```
-uv run python -m unittest discover tests
-```
-
-## Deploy
 
 Whorl is one process: FastAPI serves both the API and the frontend, so there is
 no CORS to configure and nothing else to host. Any host that runs a Dockerfile
