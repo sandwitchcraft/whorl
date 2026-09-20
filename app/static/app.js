@@ -352,8 +352,18 @@ bindDisplayControl('motion-toggle', 'motion', value => Spiral.setMode(value));
 bindDisplayControl('order-toggle', 'order', value => Spiral.setSorted(value === 'sorted'));
 syncDisplayControls();
 
+/* Mobile browsers fire `resize` while scrolling as the address bar collapses and
+ * returns, changing only the height by a few dozen px. Re-rendering then restarts the
+ * animation, so only react to a width change or a substantial height change. */
 let resizeJob = null;
+let lastWidth = window.innerWidth;
+let lastHeight = window.innerHeight;
 window.addEventListener('resize', () => {
+  const widthChanged = window.innerWidth !== lastWidth;
+  const heightJump = Math.abs(window.innerHeight - lastHeight) > 150;
+  if (!widthChanged && !heightJump) return;
+  lastWidth = window.innerWidth;
+  lastHeight = window.innerHeight;
   clearTimeout(resizeJob);
   resizeJob = setTimeout(() => {
     if (!views.result.hidden && profiles.length) renderResult();
